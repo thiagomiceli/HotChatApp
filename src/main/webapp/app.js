@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ngRoute', 'ngCookies'])
+        .module('app', ['ngRoute', 'ngCookies', 'ngToast'])
         .config(config)
         .run(run);
 
@@ -24,6 +24,12 @@
             .when('/register', {
                 controller: 'RegisterController',
                 templateUrl: 'register/register.view.html',
+                controllerAs: 'vm'
+            })
+            
+            .when('/chat', {
+                controller: 'ChatController',
+                templateUrl: 'chat/chat.view.html',
                 controllerAs: 'vm'
             })
 

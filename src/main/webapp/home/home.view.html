@@ -4,8 +4,7 @@
 <ul>
     <li ng-repeat="user in vm.allUsers">
         {{user.userName}} ({{user.firstName}} {{user.lastName}})
-        - <p><a href="chat.html" class="btn btn-primary">Logout</a></p>
-        <!-- - <a ng-click="vm.deleteUser(user.id)">Delete</a> -->
+        <a ng-click="vm.chatWith(user.userName)">Chat With</a>
     </li>
 </ul>
 <p>&nbsp;</p>

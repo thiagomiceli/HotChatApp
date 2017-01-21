@@ -5,13 +5,14 @@
         .module('app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['UserService', '$rootScope'];
-    function HomeController(UserService, $rootScope) {
+    HomeController.$inject = ['$location', 'UserService', '$rootScope'];
+    function HomeController($location, UserService, $rootScope) {
         var vm = this;
 
         vm.user = null;
         vm.allUsers = [];
         vm.deleteUser = deleteUser;
+        vm.chatWith = chatWith;
 
         initController();
 
@@ -39,6 +40,11 @@
             .then(function () {
                 loadAllUsers();
             });
+        }
+        
+        function chatWith(userName) {
+        	$rootScope.globals.receiver = userName;
+        	$location.path('/chat');
         }
     }
 

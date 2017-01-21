@@ -23,9 +23,12 @@
 				password : password
 			}).then(function(response) {
 				callback(response);
+			}).catch(function (e) {
+			    console.log(e);
+			    callback(e);
 			});
 		}
-
+		
 		function SetCredentials(userName, password) {
 			var authdata = Base64.encode(userName + ':' + password);
 

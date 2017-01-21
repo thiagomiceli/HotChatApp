@@ -1,0 +1,44 @@
+
+<head>
+	<link href="./resource/css/bootstrap.css" rel="stylesheet">
+	<link href="./resource/css/bootstrap-responsive.css" rel="stylesheet">
+	
+	<!-- Fav and touch icons -->
+	<link rel="apple-touch-icon-precomposed" sizes="144x144"
+		href="./resource/ico/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114"
+		href="./resource/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72"
+		href="./resource/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed"
+		href="./resource/ico/apple-touch-icon-57-precomposed.png">
+	<link rel="shortcut icon" href="./resource/ico/favicon.png">
+
+</head>
+
+<body>
+	<toast></toast>
+	<div class="container chat-wrapper">
+		<form id="do-chat">
+			<h2 class="alert alert-success"> HotChating with {{vm.receiver}}</h2>
+			<table id="response" class="table table-bordered">
+				<tr ng-repeat="message in vm.messages">
+           			<td class="received"> {{message.received}} </td> 
+           			<td class="user label label-info"> {{message.sender}}</td>
+					<td class="message badge"> {{message.message}}</td>
+				</tr>
+			</table>
+			<fieldset>
+				<legend>Enter your message..</legend>
+				<div class="controls">
+					<input type="text" ng-model="vm.message" class="input-block-level" placeholder="Your message..." id="message" style="height:60px"/>
+					<input type="submit" ng-click="vm.sendMessage()" class="btn btn-large btn-block btn-primary"
+						value="Send message" />
+					<button ng-click="vm.leaveRoom()" class="btn btn-large btn-block" type="button" id="leave-room">Leave room</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</body>
+
+
