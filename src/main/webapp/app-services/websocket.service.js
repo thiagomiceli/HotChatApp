@@ -11,7 +11,7 @@
 		service.sendMessage = sendMessage;
 		service.subscribe = subscribe;
 		service.unsubscribe = unsubscribe;
-		service.leaveRoom = leaveRoom;
+		service.logout = logout;
 		var serviceLocation = "ws://0.0.0.0:8080/hotchat/chat/" + userName;
 		var wsocket = new WebSocket(serviceLocation);
 		wsocket.onmessage = onMessageReceived;
@@ -39,7 +39,7 @@
           delete service.callbacks[concernedScopeId];
         }
 		
-		function leaveRoom() {
+		function logout() {
 			wsocket.close();
 		}
 

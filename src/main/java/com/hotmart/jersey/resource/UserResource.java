@@ -1,9 +1,8 @@
 package com.hotmart.jersey.resource;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -17,6 +16,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.hotmart.hotchat.controller.HotChatController;
+import com.hotmart.hotchat.dto.HotMessage;
 import com.hotmart.hotchat.dto.User;
 
 @Path("/users")
@@ -28,9 +29,7 @@ public class UserResource {
 	 * Logger
 	 */
 	private final Logger logger = Logger.getLogger(getClass().getName());
-
-	private static Map<String, User> users = Collections.synchronizedMap(new LinkedHashMap<String, User>());
-
+	
 	/**
 	 * Get all registered users
 	 * 
@@ -38,7 +37,7 @@ public class UserResource {
 	 */
 	@GET
 	public Collection<User> getAllUsers() {
-		return users.values();
+		return HotChatController.getUsers().values();
 	}
 
 	/**
@@ -49,20 +48,44 @@ public class UserResource {
 	@GET
 	@Path("/{userName}")
 	public Response getUserByUserName(@PathParam("userName") String userName) {
-		User retrievedUser = users.get(userName);
+		User retrievedUser = HotChatController.getUsers().get(userName);
 		if (retrievedUser != null) {
-			return Response.status(200).entity(users.get(userName)).build();
+			return Response.status(200).entity(HotChatController.getUsers().get(userName)).build();
 		} else {
 			return Response.status(Response.Status.NOT_FOUND).entity("Incorrect username or password!")
 					.type(MediaType.TEXT_PLAIN).build();
 		}
+	}
+	
+	/**
+	 * Get chat history with user 
+	 * 
+	 * @return the Response with chatHistory
+	 */
+	@GET
+	@Path("/{sender}/{receiver}")
+	public Collection<HotMessage> getChatHistoryByUserName(@PathParam("sender") String sender, @PathParam("receiver") String receiver) {
+		 return HotChatController.getChatHistory(sender, receiver);
+	}
+	
+	@GET
+	@Path("/offline/{userName}")
+	public Collection<HotMessage> getOfflineMessages(@PathParam("userName") String userName) {
+		 return HotChatController.getOfflineMessages(userName);
+	}
+	
+	@POST
+	@Path("/{userName}/{status}")
+	public Response setUserOnlineStatus(@PathParam("userName") String userName, @PathParam("status") boolean status) {
+		 HotChatController.getUser(userName).setOnline(status);
+		 return Response.status(200).entity("User status set").build();
 	}
 
 	@POST
 	@Path("/authenticate")
 	public Response authenticateUser(User user) {
 		logger.info("authenticate [userName:" + user.getUserName() + ", " + "password:" + user.getPassword() + "]");
-		User retrievedUser = users.get(user.getUserName());
+		User retrievedUser = HotChatController.getUsers().get(user.getUserName());
 		if (retrievedUser != null && retrievedUser.getPassword().equals(user.getPassword())) {
 			return Response.status(200).entity(retrievedUser).build();
 		} else {
@@ -75,8 +98,9 @@ public class UserResource {
 	public Response create(User user) {
 		logger.info("creating new user...");
 		if (user != null) {
-			if (users.get(user.getUserName()) == null) {
-				users.put(user.getUserName(), user);
+			if (HotChatController.getUsers().get(user.getUserName()) == null) {
+				user.setChatsHistory(new HashMap<String,List<HotMessage>>());
+				HotChatController.getUsers().put(user.getUserName(), user);
 				logger.info("model saved... " + user.toString());
 				return Response.status(200).entity(user).build();
 			} else {
@@ -92,7 +116,7 @@ public class UserResource {
 	public void delete(@PathParam("userName") String userName) {
 		logger.info("deleting user...");
 		if (userName != null) {
-			users.remove(userName);
+			HotChatController.getUsers().remove(userName);
 			logger.info("user " + userName + " deleted.");
 		} else {
 			throw new WebApplicationException();

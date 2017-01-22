@@ -1,5 +1,9 @@
 package com.hotmart.hotchat.dto;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * @author thiagomiceli
  *
@@ -13,6 +17,14 @@ public class User {
 	private String userName;
 	
 	private String password;
+	
+	private boolean online;
+	
+	//receiver,messages
+	private HashMap<String, List<HotMessage>> chatsHistory = new HashMap<String, List<HotMessage>>();;
+	
+	//sender,messages
+	private List<HotMessage> offlineMessages = new ArrayList<HotMessage>();
 
 	public User() {
 		super();
@@ -24,6 +36,7 @@ public class User {
 		this.lastName = lastName;
 		this.userName = userName;
 		this.password = password;
+		this.chatsHistory = new HashMap<String, List<HotMessage>>();
 	}
 
 	public String getFirstName() {
@@ -58,11 +71,34 @@ public class User {
 		this.password = password;
 	}
 	
+	public boolean isOnline() {
+		return online;
+	}
+
+	public void setOnline(boolean online) {
+		this.online = online;
+	}
+
+	public HashMap<String, List<HotMessage>> getChatsHistory() {
+		return chatsHistory;
+	}
+
+	public void setChatsHistory(HashMap<String, List<HotMessage>> chatsHistory) {
+		this.chatsHistory = chatsHistory;
+	}
+	
+	public List<HotMessage> getOfflineMessages() {
+		return offlineMessages;
+	}
+
+	public void setOfflineMessages(List<HotMessage> offlineMessages) {
+		this.offlineMessages = offlineMessages;
+	}
+
 	@Override
 	public String toString() {
 		return "User [firstName=" + firstName + ", " + "lastName=" + lastName + ", userName=" + userName + ", password="
 				+ password + "]";
 	}
 
-	
 }

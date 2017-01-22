@@ -16,13 +16,13 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import com.hotmart.hotchat.controller.HotChatController;
 import com.hotmart.hotchat.dto.HotMessage;
 import com.hotmart.hotchat.encoder.HotMessageDecoder;
 import com.hotmart.hotchat.encoder.HotMessageEncoder;
 
 /**
- * @author thiagomiceli 
- * Server side endpoint to chat service
+ * @author thiagomiceli Server side endpoint to chat service
  *
  */
 @ServerEndpoint(value = "/chat/{user}", encoders = HotMessageEncoder.class, decoders = HotMessageDecoder.class)
@@ -30,77 +30,87 @@ public class HotChatEndpoint {
 
 	private final Logger log = Logger.getLogger(getClass().getName());
 	private Session session;
-    private String userName;
-    private static final Set<HotChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
-    private static HashMap<String,String> users = new HashMap<>();
+	private String userName;
+	private static final Set<HotChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
+	private static HashMap<String, String> users = new HashMap<>();
 
-	
 	@OnOpen
-	public void open(final Session session, @PathParam("user") final String userName) throws IOException, EncodeException {
+	public void open(final Session session, @PathParam("user") final String userName)
+			throws IOException, EncodeException {
 		log.info("session openend and bound to user: " + userName);
 		this.session = session;
-        this.userName = userName;
-        chatEndpoints.add(this);
-        users.put(session.getId(), this.userName);
+		this.userName = userName;
+		chatEndpoints.add(this);
+		users.put(session.getId(), this.userName);
 
-        HotMessage hotMessage = new HotMessage();
-        hotMessage.setSender(this.userName);
-        hotMessage.setMessage("connected!");
-        hotMessage.setReceiver("all");
-        hotMessage.setTimeStamp(new Date());
-        broadcast(hotMessage);
+		HotMessage hotMessage = new HotMessage();
+		hotMessage.setSender(this.userName);
+		hotMessage.setMessage("connected!");
+		hotMessage.setReceiver("all");
+		hotMessage.setTimeStamp(new Date());
+		broadcast(hotMessage);
 	}
 
 	@OnMessage
 	public void onMessage(final Session session, final HotMessage hotMessage) throws IOException, EncodeException {
-	        sendMessageToOneUser(hotMessage);
+		sendMessageToOneUser(hotMessage);
 	}
-	
+
 	@OnClose
-    public void onClose(Session session) throws IOException, EncodeException {
-        log.info(session.getId() + " disconnected!");
+	public void onClose(Session session) throws IOException, EncodeException {
+		log.info(session.getId() + " disconnected!");
 
-        chatEndpoints.remove(this);
-        HotMessage message = new HotMessage();
-        message.setSender(users.get(session.getId()));
-        message.setMessage("disconnected!");
-        broadcast(message);
-    }
+		chatEndpoints.remove(this);
+//		users.remove(session.getId());
+		HotMessage hotMessage = new HotMessage();
+		hotMessage.setSender(users.get(session.getId()));
+		hotMessage.setMessage("disconnected!");
+		hotMessage.setTimeStamp(new Date());
+//		broadcast(hotMessage);
+	}
 
-    @OnError
-    public void onError(Session session, Throwable throwable) {
-        log.warning(throwable.toString());
-    }
+	@OnError
+	public void onError(Session session, Throwable throwable) {
+		log.warning(throwable.toString());
+	}
 
-    private static void broadcast(HotMessage message) throws IOException, EncodeException {
-        for (HotChatEndpoint endpoint : chatEndpoints) {
-            synchronized(endpoint) {
-            	if (!endpoint.session.getId().equals(getSessionId(message.getSender()))) {
-            		endpoint.session.getBasicRemote().sendObject(message);
-            	}
-            }
-        }
-    }
-
-    private static void sendMessageToOneUser(HotMessage message) throws IOException, EncodeException {
-        for (HotChatEndpoint endpoint : chatEndpoints) {
-            synchronized(endpoint) {
-				if (endpoint.session.getId().equals(getSessionId(message.getSender()))
-						|| endpoint.session.getId().equals(getSessionId(message.getReceiver()))) {
+	private static void broadcast(HotMessage message) throws IOException, EncodeException {
+		for (HotChatEndpoint endpoint : chatEndpoints) {
+			synchronized (endpoint) {
+				if (!endpoint.session.getId().equals(getSessionId(message.getSender()))) {
 					endpoint.session.getBasicRemote().sendObject(message);
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    private static String getSessionId(String to) {
-        if (users.containsValue(to)) {
-            for (String sessionId: users.keySet()) {
-                if (users.get(sessionId).equals(to)) {
-                    return sessionId;
-                }
-            }
-        }
-        return null;
-    }
+	private static void sendMessageToOneUser(HotMessage hotMessage) throws IOException, EncodeException {
+		for (HotChatEndpoint endpoint : chatEndpoints) {
+			synchronized (endpoint) {
+				if (endpoint.session.getId().equals(getSessionId(hotMessage.getSender()))) {
+					endpoint.session.getBasicRemote().sendObject(hotMessage);
+					HotChatController.addToChatHistory(hotMessage.getSender(), hotMessage.getReceiver(), hotMessage);
+					
+				} else if(endpoint.session.getId().equals(getSessionId(hotMessage.getReceiver()))) {
+					if(HotChatController.isUserOnline(hotMessage.getReceiver())) {
+						endpoint.session.getBasicRemote().sendObject(hotMessage);
+						HotChatController.addToChatHistory(hotMessage.getSender(), hotMessage.getReceiver(), hotMessage);
+					} else {
+						HotChatController.addToOfflineMessages(hotMessage.getReceiver(), hotMessage);
+					}
+				}
+			}
+		}
+	}
+
+	private static String getSessionId(String to) {
+		if (users.containsValue(to)) {
+			for (String sessionId : users.keySet()) {
+				if (users.get(sessionId).equals(to)) {
+					return sessionId;
+				}
+			}
+		}
+		return null;
+	}
 }

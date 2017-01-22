@@ -3,29 +3,42 @@
 
 	angular.module('app').controller('ChatController', ChatController);
 
-	ChatController.$inject = [ 'WebSocketService', '$rootScope', '$scope', '$location', 'ngToast'];
-	function ChatController(WebSocketService, $rootScope, $scope, $location, ngToast) {
+	ChatController.$inject = [ 'UserService', 'WebSocketService', '$rootScope', '$scope', '$location', 'ngToast'];
+	function ChatController(UserService, WebSocketService, $rootScope, $scope, $location, ngToast) {
 		var vm = this;
-		$rootScope.messages = [];
+		$rootScope.hotMessages = [];
+		var chatHistory;
 		vm.sendMessage = sendMessage;
 		vm.leaveRoom = leaveRoom;
 		vm.receiver = $rootScope.globals.receiver;
-		vm.messages = $rootScope.messages;
+		vm.hotMessages = $rootScope.hotMessages;
+		var userName = $rootScope.globals.currentUser.userName;
+		init();
 		
-		WebSocketService.subscribe($scope.$id, function (message) {   
+		WebSocketService.subscribe($scope.$id, function (hotMessage) {   
 		      $scope.$apply(function () {
-		         $rootScope.messages.push(message);
-		         ngToast.create('a toast message...');
+		         $rootScope.hotMessages.push(hotMessage);
+		         var msg = '[' + hotMessage.sender + '] ' + hotMessage.message  
+		         ngToast.create({
+		        	 	content: '<a href="#!/" class="">'+msg+'</a>',
+		        	    dismissOnTimeout: true,
+		        	    timeout: 15000,
+		        	    dismissOnClick: true,
+		        	  });
 		         
 		      });
 		});
+		
+		function init() {
+//			var userName = $rootScope.globals.currentUser.userName;
+			chatHistory = UserService.getChatHistory(userName, vm.receiver);
+		}
 		
 		function sendMessage() {
 			WebSocketService.sendMessage(vm.message);
 		}
 		
 		function leaveRoom() {
-			WebSocketService.leaveRoom();
 			$location.path('/');
 		}
 	}
