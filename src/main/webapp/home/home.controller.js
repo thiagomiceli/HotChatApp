@@ -69,7 +69,11 @@
 
 		function loadAllUsers() {
 			UserService.getAll().then(function(response) {
-				vm.allUsers = response.data;
+				angular.forEach(response.data, function(user) {
+					if(user.userName !== userName) {
+						vm.allUsers.push(user);
+					}
+				});
 			});
 		}
 

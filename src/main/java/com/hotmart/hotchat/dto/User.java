@@ -18,7 +18,7 @@ public class User {
 	
 	private String password;
 	
-	private boolean online;
+	private boolean online = false;
 	
 	//receiver,messages
 	private HashMap<String, List<HotMessage>> chatsHistory = new HashMap<String, List<HotMessage>>();;

@@ -1,18 +1,6 @@
 
 <head>
 <link href="./resource/css/bootstrap.css" rel="stylesheet">
-<link href="./resource/css/bootstrap-responsive.css" rel="stylesheet">
-
-<!-- Fav and touch icons -->
-<link rel="apple-touch-icon-precomposed" sizes="144x144"
-	href="./resource/ico/apple-touch-icon-144-precomposed.png">
-<link rel="apple-touch-icon-precomposed" sizes="114x114"
-	href="./resource/ico/apple-touch-icon-114-precomposed.png">
-<link rel="apple-touch-icon-precomposed" sizes="72x72"
-	href="./resource/ico/apple-touch-icon-72-precomposed.png">
-<link rel="apple-touch-icon-precomposed"
-	href="./resource/ico/apple-touch-icon-57-precomposed.png">
-<link rel="shortcut icon" href="./resource/ico/favicon.png">
 
 </head>
 
@@ -27,27 +15,32 @@
 							<img src='resource/img/hotmart-logo.png' class='iconDetails'>
 						</div>
 						<div style='margin-left: 60px;'>
-							<h4>HotChating with {{vm.receiver.firstName}} {{vm.receiver.lastName}}</h4>
+							<h4>HotChating with {{vm.receiver.firstName}}
+								{{vm.receiver.lastName}}</h4>
 						</div>
 					</div>
 				</div>
 				<div class="panel-body">
-					<table id="response" class="table table-bordered">
-						<tr ng-repeat="hotMessage in vm.hotMessages">
-							<td class="received">{{hotMessage.received}}</td>
-							<td class="user label label-info">{{hotMessage.senderFirstLastName}}</td>
-							<td class="message badge">{{hotMessage.message}}</td>
-						</tr>
-					</table>
+
+					<div  style="overflow-y:scroll" class="panel panel-success"
+						ng-repeat="hotMessage in vm.hotMessages">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								{{hotMessage.senderFirstLastName}} <span class='smaller'>{{hotMessage.received}}</span>
+							</h3>
+						</div>
+						<div class="panel-body">{{hotMessage.message}}</div>
+					</div>
+
 					<fieldset>
-						<legend>Enter your message..</legend>
+						<legend><h4>Enter your message..</h4></legend>
 						<div class="controls">
 							<input type="text" ng-model="vm.message"
 								class="input-block-level" placeholder="Your message..."
 								id="message" style="height: 60px" /> <input type="submit"
 								ng-click="vm.sendMessage()"
-								class="btn btn-large btn-block btn-primary" value="Send message" />
-							<button ng-click="vm.leaveRoom()" class="btn btn-large btn-block"
+								class="btn btn-lg btn-success" value="Send message" />
+							<button ng-click="vm.leaveRoom()" class="btn btn-lg btn-warning"
 								type="button" id="leave-room">Leave room</button>
 						</div>
 					</fieldset>

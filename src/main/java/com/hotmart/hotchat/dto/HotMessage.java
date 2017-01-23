@@ -49,12 +49,13 @@ public class HotMessage {
 	 * @param message the message
 	 * @param timeStamp the timestamp of the message
 	 */
-	public HotMessage(String sender, String receiver, String message, Date timeStamp) {
+	public HotMessage(String sender, String receiver, String message, String senderFirstLastName, Date timeStamp) {
 		super();
 		this.sender = sender;
-//		this.receiver = receiver;
+		this.receiver = receiver;
 		this.message = message;
 		this.timeStamp = timeStamp;
+		this.senderFirstLastName = senderFirstLastName;
 	}
 	
 

@@ -3,11 +3,10 @@
 <p>Welcome to HotMart Hotchat!!</p>
 <h3>All registered users:</h3>
 <ul>
-    <li ng-repeat="user in vm.allUsers">
-        {{user.userName}} ({{user.firstName}} {{user.lastName}})
-        <a ng-click="vm.chatWith(user.userName)">Chat With</a>
-    </li>
+	<div class="list-group" >
+		<a ng-repeat="user in vm.allUsers"  ng-click="vm.chatWith(user.userName)" class="list-group-item">{{user.firstName}}
+			{{user.lastName}}</a> 
+	</div>
 </ul>
 <p>&nbsp;</p>
-<button ng-click="vm.logout()" class="btn btn-large btn-block"
-								type="button" id="logout">Logout</button>
+<button ng-click="vm.logout()" type="button" class="btn btn-lg btn-danger">Logout</button>

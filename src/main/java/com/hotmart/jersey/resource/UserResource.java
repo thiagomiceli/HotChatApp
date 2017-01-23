@@ -20,7 +20,12 @@ import com.hotmart.hotchat.controller.HotChatController;
 import com.hotmart.hotchat.dto.HotMessage;
 import com.hotmart.hotchat.dto.User;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 @Path("/users")
+@Api(value = "/users", description = "HotMart Code Challenge that creates a webchat using websockets")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -29,13 +34,14 @@ public class UserResource {
 	 * Logger
 	 */
 	private final Logger logger = Logger.getLogger(getClass().getName());
-	
+
 	/**
 	 * Get all registered users
 	 * 
 	 * @return the users
 	 */
 	@GET
+	@ApiOperation(value = "List all users", response = User.class, responseContainer = "List")
 	public Collection<User> getAllUsers() {
 		return HotChatController.getUsers().values();
 	}
@@ -47,7 +53,9 @@ public class UserResource {
 	 */
 	@GET
 	@Path("/{userName}")
-	public Response getUserByUserName(@PathParam("userName") String userName) {
+	@ApiOperation(value = "Get an user", notes = "Get an specific user by userName", response = Response.class)
+	public Response getUserByUserName(
+			@ApiParam(value = "UserName to fetch", required = true) @PathParam("userName") String userName) {
 		User retrievedUser = HotChatController.getUsers().get(userName);
 		if (retrievedUser != null) {
 			return Response.status(200).entity(HotChatController.getUsers().get(userName)).build();
@@ -56,34 +64,43 @@ public class UserResource {
 					.type(MediaType.TEXT_PLAIN).build();
 		}
 	}
-	
+
 	/**
-	 * Get chat history with user 
+	 * Get chat history with user
 	 * 
 	 * @return the Response with chatHistory
 	 */
 	@GET
 	@Path("/{sender}/{receiver}")
-	public Collection<HotMessage> getChatHistoryByUserName(@PathParam("sender") String sender, @PathParam("receiver") String receiver) {
-		 return HotChatController.getChatHistory(sender, receiver);
+	@ApiOperation(value = "Get a chat history", notes = "Get a chat history for specfic sender/receiver", response = HotMessage.class, responseContainer = "List")
+	public Collection<HotMessage> getChatHistoryByUserName(
+			@ApiParam(value = "UserName of the sender", required = true) @PathParam("sender") String sender,
+			@ApiParam(value = "UserName of the receiver", required = true) @PathParam("receiver") String receiver) {
+		return HotChatController.getChatHistory(sender, receiver);
 	}
-	
+
 	@GET
 	@Path("/offline/{userName}")
-	public Collection<HotMessage> getOfflineMessages(@PathParam("userName") String userName) {
-		 return HotChatController.expurgateOfflineMessages(userName);
+	@ApiOperation(value = "Get offline messages", notes = "Get all offline messages for an user", response = HotMessage.class, responseContainer = "List")
+	public Collection<HotMessage> getOfflineMessages(
+			@ApiParam(value = "UserName of the sender", required = true) @PathParam("userName") String userName) {
+		return HotChatController.expurgateOfflineMessages(userName);
 	}
-	
+
 	@POST
 	@Path("/{userName}/{status}")
-	public Response setUserOnlineStatus(@PathParam("userName") String userName, @PathParam("status") boolean status) {
-		 HotChatController.getUser(userName).setOnline(status);
-		 return Response.status(200).entity("User status set").build();
+	@ApiOperation(value = "Set user online status", response = Response.class)
+	public Response setUserOnlineStatus(
+			@ApiParam(value = "UserName of the sender", required = true) @PathParam("userName") String userName,
+			@ApiParam(value = "Status of the user", required = true) @PathParam("status") boolean status) {
+		HotChatController.getUser(userName).setOnline(status);
+		return Response.status(200).entity("User status set").build();
 	}
 
 	@POST
 	@Path("/authenticate")
-	public Response authenticateUser(User user) {
+	@ApiOperation(value = "Authenticate user", response = Response.class)
+	public Response authenticateUser(@ApiParam(value = "The user to be authenticated", required = true) User user) {
 		logger.info("authenticate [userName:" + user.getUserName() + ", " + "password:" + user.getPassword() + "]");
 		User retrievedUser = HotChatController.getUsers().get(user.getUserName());
 		if (retrievedUser != null && retrievedUser.getPassword().equals(user.getPassword())) {
@@ -95,11 +112,12 @@ public class UserResource {
 	}
 
 	@POST
-	public Response create(User user) {
+	@ApiOperation(value = "Create user", response = Response.class)
+	public Response create(@ApiParam(value = "The user to be created", required = true) User user) {
 		logger.info("creating new user...");
 		if (user != null) {
 			if (HotChatController.getUsers().get(user.getUserName()) == null) {
-				user.setChatsHistory(new HashMap<String,List<HotMessage>>());
+				user.setChatsHistory(new HashMap<String, List<HotMessage>>());
 				HotChatController.getUsers().put(user.getUserName(), user);
 				logger.info("model saved... " + user.toString());
 				return Response.status(200).entity(user).build();
@@ -113,7 +131,9 @@ public class UserResource {
 
 	@DELETE
 	@Path("/{userName}")
-	public void delete(@PathParam("userName") String userName) {
+	@ApiOperation(value = "Delete user", response = Response.class)
+	public void delete(
+			@ApiParam(value = "The userName of the user to be deleted", required = true) @PathParam("userName") String userName) {
 		logger.info("deleting user...");
 		if (userName != null) {
 			HotChatController.getUsers().remove(userName);

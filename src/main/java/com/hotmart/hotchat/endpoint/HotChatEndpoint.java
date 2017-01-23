@@ -1,7 +1,6 @@
 package com.hotmart.hotchat.endpoint;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
