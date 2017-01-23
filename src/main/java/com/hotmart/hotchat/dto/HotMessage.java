@@ -18,6 +18,11 @@ public class HotMessage {
 	 * the user who will receive the message
 	 */
 	private String receiver;
+	
+	/**
+	 * the first+last name of the sender
+	 */
+	private String senderFirstLastName;
 
 	/**
 	 * the message to be sent
@@ -126,6 +131,14 @@ public class HotMessage {
 	 */
 	public void setTimeStamp(Date timeStamp) {
 		this.timeStamp = timeStamp;
+	}
+
+	public String getSenderFirstLastName() {
+		return senderFirstLastName;
+	}
+
+	public void setSenderFirstLastName(String senderFirstLastName) {
+		this.senderFirstLastName = senderFirstLastName;
 	}
 
 	@Override

@@ -33,6 +33,7 @@ public class HotMessageDecoder implements Decoder.Text<HotMessage> {
 		hotMessage.setSender(obj.getString("sender"));
 		hotMessage.setMessage(obj.getString("message"));
 		hotMessage.setReceiver(obj.getString("receiver"));
+		hotMessage.setSenderFirstLastName(obj.getString("senderFirstLastName"));
 		hotMessage.setTimeStamp(new Date());
 		return hotMessage;
 	}

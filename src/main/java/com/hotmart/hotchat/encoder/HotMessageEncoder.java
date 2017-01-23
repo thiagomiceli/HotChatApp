@@ -28,6 +28,7 @@ public class HotMessageEncoder implements Encoder.Text<HotMessage>{
 				.add("sender", hotMessage.getSender())
 				.add("message", hotMessage.getMessage())
 				.add("receiver", hotMessage.getReceiver())
+				.add("senderFirstLastName", hotMessage.getSenderFirstLastName())
 				.add("received", hotMessage.getTimeStamp().toString()).build()
 				.toString();
 	}

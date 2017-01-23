@@ -11,10 +11,16 @@
 		service.sendMessage = sendMessage;
 		service.subscribe = subscribe;
 		service.unsubscribe = unsubscribe;
+		service.createEndpoint = createEndpoint;
 		service.logout = logout;
 		var serviceLocation = "ws://0.0.0.0:8080/hotchat/chat/" + userName;
-		var wsocket = new WebSocket(serviceLocation);
-		wsocket.onmessage = onMessageReceived;
+		var wsocket;
+		
+		
+		function createEndpoint() {
+			wsocket = new WebSocket(serviceLocation);
+			wsocket.onmessage = onMessageReceived;
+		}
 		
 		function onMessageReceived(evt) {
 			var msg = JSON.parse(evt.data);
@@ -23,12 +29,8 @@
             });
 		}
 		
-		function sendMessage(message) {
-			var msg = '{"sender":"' + $rootScope.globals.currentUser.userName +
-			'", "message":"' + message +
-			'", "receiver":"' + $rootScope.globals.receiver +
-			'", "received":""}';
-			wsocket.send(msg);
+		function sendMessage(hotMessage) {
+			wsocket.send(hotMessage);
 		}
 		
 		function subscribe(concernedScopeId, callback) {

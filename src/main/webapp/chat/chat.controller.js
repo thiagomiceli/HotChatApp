@@ -10,36 +10,81 @@
 		var chatHistory;
 		vm.sendMessage = sendMessage;
 		vm.leaveRoom = leaveRoom;
-		vm.receiver = $rootScope.globals.receiver;
+		vm.receiver;
+		var receiverUserName = $rootScope.globals.receiver;
 		vm.hotMessages = $rootScope.hotMessages;
 		var userName = $rootScope.globals.currentUser.userName;
 		init();
 		
 		WebSocketService.subscribe($scope.$id, function (hotMessage) {   
 		      $scope.$apply(function () {
-		         $rootScope.hotMessages.push(hotMessage);
-		         var msg = '[' + hotMessage.sender + '] ' + hotMessage.message  
-		         ngToast.create({
-		        	 	content: '<a href="#!/" class="">'+msg+'</a>',
-		        	    dismissOnTimeout: true,
-		        	    timeout: 15000,
-		        	    dismissOnClick: true,
-		        	  });
-		         
+		    	//if not self message
+		         if(userName !== hotMessage.sender) {
+		        	// if in chat with user
+		        	 if(hotMessage.sender === receiverUserName) {
+		        		//add hotMessage on the chat message list
+		        		 $rootScope.hotMessages.push(hotMessage);
+		        	 } else {
+		        		 //pop a toast
+		        		 var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message  
+		        		 ngToast.create({
+		        			 content: '<p>'+msg+'</p>',
+		        			 dismissOnTimeout: true,
+		        			 timeout: 15000,
+		        			 dismissOnClick: true,
+		        		 });
+		        	 }
+		         } else {
+		        	// if in chat with user
+		        	 if(hotMessage.receiver === receiverUserName) {
+		        		//add hotMessage on the chat message list
+		        		 $rootScope.hotMessages.push(hotMessage);
+		        	 } else {
+		        		 //pop a toast
+		        		 var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message  
+		        		 ngToast.create({
+		        			 content: '<p>'+msg+'</p>',
+		        			 dismissOnTimeout: true,
+		        			 timeout: 15000,
+		        			 dismissOnClick: true,
+		        		 });
+		        	 }
+		         }
 		      });
 		});
 		
 		function init() {
-//			var userName = $rootScope.globals.currentUser.userName;
-			chatHistory = UserService.getChatHistory(userName, vm.receiver);
+			UserService.getByUsername(receiverUserName)
+			.then(function(response) {
+				vm.receiver = response.data;
+				UserService.getChatHistory(userName, vm.receiver.userName)
+				.then(function(response) {	
+					angular.forEach(response.data, function(hotMessage) {
+						var strDate = hotMessage.timeStamp.toString();
+						hotMessage.received = strDate;
+						$rootScope.hotMessages.push(hotMessage);
+					});
+				});
+			});
 		}
 		
 		function sendMessage() {
-			WebSocketService.sendMessage(vm.message);
+			var msg = '{"sender":"' + $rootScope.globals.currentUser.userName +
+			'", "message":"' + vm.message +
+			'", "receiver":"' + receiverUserName +
+			'", "senderFirstLastName":"' +  $rootScope.globals.currentUser.firstName +
+			' ' +  $rootScope.globals.currentUser.lastName +
+			'", "received":""}';
+			WebSocketService.sendMessage(msg);
 		}
 		
 		function leaveRoom() {
 			$location.path('/');
 		}
+		
+		$scope.$on("$destroy",function() {
+			WebSocketService.unsubscribe($scope.$id);      
+		});
+		
 	}
 })();

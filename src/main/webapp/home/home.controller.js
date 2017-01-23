@@ -21,27 +21,35 @@
 			loadCurrentUser();
 			loadAllUsers();
 			showOfflineMessages();
+			WebSocketService.createEndpoint();
 			WebSocketService.subscribe($scope.$id, function(hotMessage) {
-				createToast(hotMessage);
+				if(hotMessage.sender !== userName) {
+					createToast(hotMessage);
+				}
 			});
 		}
-		
-		 
 
 		function showOfflineMessages() {
 			UserService.getOfflineMessages(userName).then(function(response) {
 				vm.offlineMessages = response.data;
-//				angular.forEach(vm.offlineMessages, function(hotMessage) {
-//					createToast(hotMessage);
-//				});
+				angular.forEach(vm.offlineMessages, function(hotMessage) {
+					var msg = 'While you were offline... <br> [' + hotMessage.senderFirstLastName + '] ' + hotMessage.message  
+			         ngToast.create({
+			        	 	content: '<p>'+msg+'</p>',
+			        	    dismissOnTimeout: true,
+			        	    timeout: 15000,
+			        	    className:	'warning',
+			        	    dismissOnClick: true,
+			        	  });
+				});
 			});
 		}
 
 		function createToast(hotMessage) {
-			var msg = '[' + hotMessage.sender + '] ' + hotMessage.message; 
+			var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message; 
 			$scope.$apply(function() {
 				ngToast.create({
-	        	 	content: '<a href="#!/" class="">'+msg+'</a>',
+	        	 	content: '<p>'+msg+'</p>',
 	        	    dismissOnTimeout: true,
 	        	    timeout: 15000,
 	        	    dismissOnClick: true,
@@ -54,7 +62,8 @@
 					userName, true);
 			UserService.getByUsername(userName)
 					.then(function(response) {
-						vm.user = response.data;
+						$rootScope.globals.currentUser = response.data;
+						vm.user = $rootScope.globals.currentUser
 					});
 		}
 
@@ -75,6 +84,11 @@
 			WebSocketService.logout();
 			$location.path('#!/login');
 		}
+		
+		$scope.$on("$destroy",function() {
+			WebSocketService.unsubscribe($scope.$id);      
+		});
+		
 	}
 
 })();

@@ -22,28 +22,20 @@
 		<form id="do-chat">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-
-
 					<div class='container2'>
 						<div>
 							<img src='resource/img/hotmart-logo.png' class='iconDetails'>
 						</div>
 						<div style='margin-left: 60px;'>
-							<h4>HotChating with {{vm.receiver}}</h4>
+							<h4>HotChating with {{vm.receiver.firstName}} {{vm.receiver.lastName}}</h4>
 						</div>
 					</div>
-
-
-
-					<!-- <img src="resource/img/hotmart-logo.png" alt="HTML5 Icon"
-						style="width: 60px; height: 60px;" class="ng-scope">
-					<h3 class="panel-title">HotChating with {{vm.receiver}}</h3> -->
 				</div>
 				<div class="panel-body">
 					<table id="response" class="table table-bordered">
 						<tr ng-repeat="hotMessage in vm.hotMessages">
 							<td class="received">{{hotMessage.received}}</td>
-							<td class="user label label-info">{{hotMessage.sender}}</td>
+							<td class="user label label-info">{{hotMessage.senderFirstLastName}}</td>
 							<td class="message badge">{{hotMessage.message}}</td>
 						</tr>
 					</table>

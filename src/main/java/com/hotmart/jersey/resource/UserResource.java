@@ -71,7 +71,7 @@ public class UserResource {
 	@GET
 	@Path("/offline/{userName}")
 	public Collection<HotMessage> getOfflineMessages(@PathParam("userName") String userName) {
-		 return HotChatController.getOfflineMessages(userName);
+		 return HotChatController.expurgateOfflineMessages(userName);
 	}
 	
 	@POST
