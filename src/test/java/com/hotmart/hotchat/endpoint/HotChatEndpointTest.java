@@ -9,9 +9,17 @@ import org.junit.Test;
 
 import com.hotmart.hotchat.dto.HotMessage;
 
+/**
+ * Test class of the websocket server 
+ * @author thiagomiceli
+ *
+ */
 public class HotChatEndpointTest {
 	HotChatEndpointClient clientEndPoint = new HotChatEndpointClient();
 
+	/**
+	 * Send a message successful test
+	 */
 	@Test
 	public void sendHotMessageSucess() {
 		// add listener
@@ -29,6 +37,10 @@ public class HotChatEndpointTest {
 		}
 	}
 
+	
+	/**
+	 * Send a message fail test
+	 */
 	@Test(expected=RuntimeException.class)
 	public void sendHotMessageFail() {
 		// add listener

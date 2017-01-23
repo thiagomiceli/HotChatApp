@@ -24,16 +24,24 @@
 			WebSocketService.createEndpoint();
 			WebSocketService.subscribe($scope.$id, function(hotMessage) {
 				if(hotMessage.sender !== userName) {
-					createToast(hotMessage);
+					var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message; 
+					$scope.$apply(function() {
+						ngToast.create({
+			        	 	content: '<p>'+msg+'</p>',
+			        	    dismissOnTimeout: true,
+			        	    timeout: 15000,
+			        	    dismissOnClick: true,
+			        	  });
+					});
 				}
 			});
 		}
-
+		
 		function showOfflineMessages() {
 			UserService.getOfflineMessages(userName).then(function(response) {
 				vm.offlineMessages = response.data;
 				angular.forEach(vm.offlineMessages, function(hotMessage) {
-					var msg = 'While you were offline... <br> [' + hotMessage.senderFirstLastName + '] ' + hotMessage.message  
+					var msg = '[While you were offline] <br>' + hotMessage.message  
 			         ngToast.create({
 			        	 	content: '<p>'+msg+'</p>',
 			        	    dismissOnTimeout: true,
@@ -42,18 +50,6 @@
 			        	    dismissOnClick: true,
 			        	  });
 				});
-			});
-		}
-
-		function createToast(hotMessage) {
-			var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message; 
-			$scope.$apply(function() {
-				ngToast.create({
-	        	 	content: '<p>'+msg+'</p>',
-	        	    dismissOnTimeout: true,
-	        	    timeout: 15000,
-	        	    dismissOnClick: true,
-	        	  });
 			});
 		}
 

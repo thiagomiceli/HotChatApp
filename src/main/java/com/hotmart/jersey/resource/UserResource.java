@@ -24,6 +24,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+/**
+ * @author thiagomiceli
+ * Jersey Restful server to manage users
+ *
+ */
 @Path("/users")
 @Api(value = "/users", description = "HotMart Code Challenge that creates a webchat using websockets")
 @Produces(MediaType.APPLICATION_JSON)
@@ -79,6 +84,11 @@ public class UserResource {
 		return HotChatController.getChatHistory(sender, receiver);
 	}
 
+	/**
+	 * Get all offline messages
+	 * @param userName the userName of the user
+	 * @return the offline messages of the user
+	 */
 	@GET
 	@Path("/offline/{userName}")
 	@ApiOperation(value = "Get offline messages", notes = "Get all offline messages for an user", response = HotMessage.class, responseContainer = "List")
@@ -87,6 +97,12 @@ public class UserResource {
 		return HotChatController.expurgateOfflineMessages(userName);
 	}
 
+	/**
+	 * Set the user online status
+	 * @param userName the userName
+	 * @param status, of the user to be set 
+	 * @return the response of the operation
+	 */
 	@POST
 	@Path("/{userName}/{status}")
 	@ApiOperation(value = "Set user online status", response = Response.class)
@@ -97,6 +113,11 @@ public class UserResource {
 		return Response.status(200).entity("User status set").build();
 	}
 
+	/**
+	 * Authenticate an user
+	 * @param user the user to be authenticated
+	 * @return the response of the operation
+	 */
 	@POST
 	@Path("/authenticate")
 	@ApiOperation(value = "Authenticate user", response = Response.class)
@@ -111,6 +132,11 @@ public class UserResource {
 		}
 	}
 
+	/**
+	 * Create a new user
+	 * @param user the user to be created
+	 * @return the response of the operation
+	 */
 	@POST
 	@ApiOperation(value = "Create user", response = Response.class)
 	public Response create(@ApiParam(value = "The user to be created", required = true) User user) {
@@ -129,6 +155,10 @@ public class UserResource {
 		}
 	}
 
+	/**
+	 * Delete one user
+	 * @param userName the user to be deleted
+	 */
 	@DELETE
 	@Path("/{userName}")
 	@ApiOperation(value = "Delete user", response = Response.class)

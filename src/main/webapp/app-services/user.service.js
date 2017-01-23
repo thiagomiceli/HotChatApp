@@ -1,4 +1,5 @@
-﻿(function () {
+﻿//Client to access the restful webservice
+(function () {
     'use strict';
 
     angular

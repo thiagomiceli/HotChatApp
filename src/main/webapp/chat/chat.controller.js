@@ -16,7 +16,8 @@
 		var userName = $rootScope.globals.currentUser.userName;
 		init();
 		
-		WebSocketService.subscribe($scope.$id, function (hotMessage) {   
+		WebSocketService.subscribe($scope.$id, function (hotMessage) {  
+			//when a new message arrives... execute
 		      $scope.$apply(function () {
 		    	//if not self message
 		         if(userName !== hotMessage.sender) {
@@ -26,7 +27,6 @@
 		        		 $rootScope.hotMessages.push(hotMessage);
 		        	 } else {
 		        		 //pop a toast
-		        		 var msg = '[' + hotMessage.senderFirstLastName + '] ' + hotMessage.message  
 		        		 ngToast.create({
 		        			 content: '<p>'+msg+'</p>',
 		        			 dismissOnTimeout: true,
@@ -54,8 +54,10 @@
 		});
 		
 		function init() {
+			//retrieve the user
 			UserService.getByUsername(receiverUserName)
 			.then(function(response) {
+				//load chat history
 				vm.receiver = response.data;
 				UserService.getChatHistory(userName, vm.receiver.userName)
 				.then(function(response) {	
